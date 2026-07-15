@@ -1,0 +1,71 @@
+<div class="flex min-h-dvh items-center justify-center px-4">
+  <form
+    [formGroup]="form"
+    (ngSubmit)="submit()"
+    class="border-border w-full max-w-sm space-y-4 rounded-lg border p-6"
+  >
+    <div class="space-y-1">
+      <h1 class="text-xl font-semibold">Entrar</h1>
+      <p class="text-muted-foreground text-sm">Acesse seus boards do Slingboard.</p>
+    </div>
+
+    <div class="space-y-1.5">
+      <label hlmLabel for="email">Email</label>
+      <input
+        hlmInput
+        id="email"
+        type="email"
+        formControlName="email"
+        autocomplete="email"
+        (blur)="touched.markTouched('email')"
+      />
+      @if (form.controls.email.invalid && touched.isTouched('email')) {
+        <p class="text-destructive text-sm">Informe um email válido.</p>
+      }
+    </div>
+
+    <div class="space-y-1.5">
+      <label hlmLabel for="password">Senha</label>
+      <div class="relative">
+        <input
+          hlmInput
+          id="password"
+          [type]="passwordVisible() ? 'text' : 'password'"
+          formControlName="password"
+          autocomplete="current-password"
+          class="pe-8"
+          (blur)="touched.markTouched('password')"
+        />
+        <button
+          type="button"
+          hlmBtn
+          variant="ghost"
+          size="icon-sm"
+          class="absolute inset-y-0 end-0.5 my-auto"
+          [attr.aria-label]="passwordVisible() ? 'Ocultar senha' : 'Mostrar senha'"
+          (click)="togglePasswordVisibility()"
+        >
+          <ng-icon [name]="passwordVisible() ? 'lucideEyeOff' : 'lucideEye'" />
+        </button>
+      </div>
+      @if (form.controls.password.invalid && touched.isTouched('password')) {
+        <p class="text-destructive text-sm">Informe sua senha.</p>
+      }
+    </div>
+
+    @if (errorMessage()) {
+      <p class="text-destructive text-sm" role="alert">{{ errorMessage() }}</p>
+    }
+
+    <button type="submit" hlmBtn class="w-full" [disabled]="submitting()">
+      {{ submitting() ? 'Entrando...' : 'Entrar' }}
+    </button>
+
+    <p class="text-muted-foreground text-center text-sm">
+      Não tem conta?
+      <a routerLink="/register" class="text-primary underline-offset-4 hover:underline"
+        >Criar conta</a
+      >
+    </p>
+  </form>
+</div>

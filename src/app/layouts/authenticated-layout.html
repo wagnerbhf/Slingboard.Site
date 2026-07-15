@@ -1,0 +1,19 @@
+<div class="bg-background text-foreground min-h-dvh transition-colors">
+  <header class="border-border flex items-center justify-between border-b px-6 py-4">
+    <a routerLink="/boards" class="text-lg font-semibold">Slingboard</a>
+
+    <div class="flex items-center gap-3">
+      @if (authService.currentUser(); as user) {
+        <span class="text-muted-foreground text-sm">{{ user.name }}</span>
+      }
+      <button type="button" hlmBtn variant="outline" size="sm" (click)="themeService.toggle()">
+        {{ themeService.theme() === 'dark' ? 'Modo claro' : 'Modo escuro' }}
+      </button>
+      <button type="button" hlmBtn variant="ghost" size="sm" (click)="logout()">Sair</button>
+    </div>
+  </header>
+
+  <main class="p-6">
+    <router-outlet />
+  </main>
+</div>

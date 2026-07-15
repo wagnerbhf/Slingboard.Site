@@ -1,0 +1,16 @@
+html,
+body {
+  min-height: 100dvh;
+}
+
+.cdk-drag-preview {
+  box-shadow: 0 4px 12px oklch(0% 0 0 / 15%);
+}
+
+.cdk-drag-placeholder {
+  opacity: 0.4;
+}
+
+.cdk-drop-list-dragging .cdk-drag:not(.cdk-drag-placeholder) {
+  transition: transform 200ms ease;
+}

@@ -1,0 +1,24 @@
+<div class="space-y-6">
+  <div class="flex items-center justify-between gap-4">
+    <div class="max-w-sm flex-1">
+      <input hlmInput type="search" placeholder="Buscar boards..." [formControl]="searchControl" />
+    </div>
+    <button type="button" hlmBtn (click)="openCreateBoardDialog()">Criar Board</button>
+  </div>
+
+  @if (errorMessage()) {
+    <p class="text-destructive text-sm" role="alert">{{ errorMessage() }}</p>
+  }
+
+  @if (loading()) {
+    <p class="text-muted-foreground text-sm">Carregando boards...</p>
+  } @else if (boards().length === 0) {
+    <p class="text-muted-foreground text-sm">Nenhum board encontrado.</p>
+  } @else {
+    <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+      @for (board of boards(); track board.id) {
+        <app-board-card [board]="board" />
+      }
+    </div>
+  }
+</div>

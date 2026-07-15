@@ -1,0 +1,110 @@
+@if (boardResource.isLoading() && !boardResource.hasValue()) {
+  <p class="text-muted-foreground text-sm">Carregando board...</p>
+} @else if (boardResource.error()) {
+  <p class="text-destructive text-sm" role="alert">Não foi possível carregar este board.</p>
+} @else if (boardResource.value(); as board) {
+  <div class="flex h-full flex-col gap-6">
+    <header class="flex items-center justify-between gap-4">
+      @if (editingTitle()) {
+        <input
+          hlmInput
+          type="text"
+          [formControl]="titleControl"
+          (keydown.enter)="saveTitle()"
+          (keydown.escape)="editingTitle.set(false)"
+          (blur)="saveTitle()"
+        />
+      } @else {
+        <h1
+          class="cursor-pointer text-xl font-semibold"
+          tabindex="0"
+          role="button"
+          [attr.aria-label]="'Editar título do board: ' + board.title"
+          (click)="startEditingTitle()"
+          (keydown.enter)="startEditingTitle()"
+        >
+          {{ board.title }}
+        </h1>
+      }
+
+      <div class="flex items-center gap-3">
+        <div class="flex -space-x-2">
+          @for (member of board.members; track member.userId) {
+            <span
+              class="border-background bg-muted flex h-8 w-8 items-center justify-center rounded-full border-2 text-xs font-medium"
+              [title]="member.name"
+            >
+              {{ initials(member.name) }}
+            </span>
+          }
+        </div>
+        <button type="button" hlmBtn variant="outline" size="sm" (click)="openExportModal()">
+          Exportar
+        </button>
+        <a hlmBtn variant="outline" size="sm" [routerLink]="['/boards', boardId(), 'settings']">
+          Configurações
+        </a>
+      </div>
+    </header>
+
+    <app-filters-bar
+      [labels]="labelsResource.value()"
+      [members]="board.members"
+      (filtersChanged)="onFiltersChanged($event)"
+    />
+
+    @if (dragErrorMessage()) {
+      <p class="text-destructive text-sm" role="alert">{{ dragErrorMessage() }}</p>
+    }
+
+    <div cdkDropListGroup class="flex flex-1 justify-center-safe gap-4 overflow-x-auto pb-4">
+      @for (column of sortedColumns(); track column.id) {
+        <app-board-column
+          [column]="column"
+          [tasks]="tasksForColumn(column.id)"
+          [members]="board.members"
+          (createTask)="createTask(column.id, $event)"
+          (taskDropped)="onTaskDropped($event)"
+          (taskClicked)="openTaskModal($event, column.id)"
+          (changed)="boardResource.reload()"
+        />
+      }
+
+      <div class="w-72 shrink-0">
+        @if (addingColumn()) {
+          <div class="border-border bg-card flex flex-col gap-2 rounded-lg border p-3">
+            <input
+              hlmInput
+              type="text"
+              [formControl]="newColumnTitle"
+              placeholder="Título da coluna"
+              (keydown.enter)="submitNewColumn()"
+              (keydown.escape)="cancelAddingColumn()"
+            />
+            @if (columnError()) {
+              <p class="text-destructive text-xs" role="alert">{{ columnError() }}</p>
+            }
+            <div class="flex gap-2">
+              <button
+                type="button"
+                hlmBtn
+                size="sm"
+                [disabled]="creatingColumn()"
+                (click)="submitNewColumn()"
+              >
+                {{ creatingColumn() ? 'Criando...' : 'Adicionar' }}
+              </button>
+              <button type="button" hlmBtn size="sm" variant="ghost" (click)="cancelAddingColumn()">
+                Cancelar
+              </button>
+            </div>
+          </div>
+        } @else {
+          <button type="button" hlmBtn variant="ghost" class="w-full" (click)="startAddingColumn()">
+            + Coluna
+          </button>
+        }
+      </div>
+    </div>
+  </div>
+}

@@ -1,0 +1,55 @@
+<div hlmDialogHeader>
+  <h2 hlmDialogTitle>Exportar board</h2>
+  <p hlmDialogDescription>Escolha o formato e os filtros para o export.</p>
+</div>
+
+<form [formGroup]="form" (ngSubmit)="submit()" class="space-y-4">
+  <div class="space-y-1.5">
+    <label hlmLabel for="format">Formato</label>
+    <select
+      id="format"
+      formControlName="format"
+      class="border-input bg-background h-8 w-full rounded-lg border px-2.5 text-sm"
+    >
+      <option value="csv">CSV</option>
+      <option value="pdf">PDF</option>
+    </select>
+  </div>
+
+  <div class="grid grid-cols-2 gap-4">
+    <div class="space-y-1.5">
+      <label hlmLabel for="dateFrom">De</label>
+      <input
+        id="dateFrom"
+        type="date"
+        formControlName="dateFrom"
+        class="border-input bg-background h-8 w-full rounded-lg border px-2.5 text-sm"
+      />
+    </div>
+    <div class="space-y-1.5">
+      <label hlmLabel for="dateTo">Até</label>
+      <input
+        id="dateTo"
+        type="date"
+        formControlName="dateTo"
+        class="border-input bg-background h-8 w-full rounded-lg border px-2.5 text-sm"
+      />
+    </div>
+  </div>
+
+  <label class="flex items-center gap-2 text-sm">
+    <input type="checkbox" formControlName="includeCompleted" class="h-4 w-4" />
+    Incluir tasks concluídas
+  </label>
+
+  @if (errorMessage()) {
+    <p class="text-destructive text-sm" role="alert">{{ errorMessage() }}</p>
+  }
+
+  <div hlmDialogFooter>
+    <button type="button" hlmBtn variant="outline" (click)="cancel()">Cancelar</button>
+    <button type="submit" hlmBtn [disabled]="exporting()">
+      {{ exporting() ? 'Exportando...' : 'Exportar' }}
+    </button>
+  </div>
+</form>

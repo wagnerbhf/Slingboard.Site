@@ -1,0 +1,33 @@
+<div class="mx-auto max-w-2xl space-y-6">
+  <div class="flex items-center justify-between">
+    <div>
+      <h1 class="text-xl font-semibold">Configurações do board</h1>
+      @if (boardResource.value(); as board) {
+        <p class="text-muted-foreground text-sm">{{ board.title }}</p>
+      }
+    </div>
+    <a hlmBtn variant="outline" size="sm" [routerLink]="['/boards', boardId()]">Voltar ao board</a>
+  </div>
+
+  <div class="border-border flex items-center justify-between rounded-lg border p-4">
+    <div>
+      <h2 class="font-medium">Labels</h2>
+      <p class="text-muted-foreground text-sm">
+        Crie e organize as labels usadas nas tasks deste board.
+      </p>
+    </div>
+    <button type="button" hlmBtn variant="outline" (click)="openLabelsManager()">
+      Gerenciar labels
+    </button>
+  </div>
+
+  <div class="border-border flex items-center justify-between rounded-lg border p-4">
+    <div>
+      <h2 class="font-medium">Membros</h2>
+      <p class="text-muted-foreground text-sm">Veja e adicione pessoas a este board.</p>
+    </div>
+    <button type="button" hlmBtn variant="outline" (click)="openMembersManager()">
+      Gerenciar membros
+    </button>
+  </div>
+</div>

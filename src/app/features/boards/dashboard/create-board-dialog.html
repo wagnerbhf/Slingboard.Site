@@ -1,0 +1,46 @@
+<div hlmDialogHeader>
+  <h2 hlmDialogTitle>Criar board</h2>
+  <p hlmDialogDescription>Dê um nome e, se quiser, uma cor pro seu novo board.</p>
+</div>
+
+<form [formGroup]="form" (ngSubmit)="submit()" class="space-y-4">
+  <div class="space-y-1.5">
+    <label hlmLabel for="title">Título</label>
+    <input
+      hlmInput
+      id="title"
+      type="text"
+      formControlName="title"
+      (blur)="touched.markTouched('title')"
+    />
+    @if (form.controls.title.invalid && touched.isTouched('title')) {
+      <p class="text-destructive text-sm">Informe um título.</p>
+    }
+  </div>
+
+  <div class="space-y-1.5">
+    <label hlmLabel for="description">Descrição</label>
+    <textarea hlmTextarea id="description" formControlName="description" rows="3"></textarea>
+  </div>
+
+  <div class="space-y-1.5">
+    <label hlmLabel for="backgroundColor">Cor</label>
+    <input
+      id="backgroundColor"
+      type="color"
+      formControlName="backgroundColor"
+      class="border-border h-9 w-16 rounded-md border p-1"
+    />
+  </div>
+
+  @if (errorMessage()) {
+    <p class="text-destructive text-sm" role="alert">{{ errorMessage() }}</p>
+  }
+
+  <div hlmDialogFooter>
+    <button type="button" hlmBtn variant="outline" (click)="cancel()">Cancelar</button>
+    <button type="submit" hlmBtn [disabled]="submitting()">
+      {{ submitting() ? 'Criando...' : 'Criar board' }}
+    </button>
+  </div>
+</form>

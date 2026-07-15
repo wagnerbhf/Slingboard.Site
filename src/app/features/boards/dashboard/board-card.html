@@ -1,0 +1,21 @@
+<a
+  [routerLink]="['/boards', board().id]"
+  class="border-border hover:border-primary/50 flex flex-col gap-3 rounded-lg border p-4 transition-colors"
+>
+  <div class="flex items-center gap-2">
+    <span
+      class="h-3 w-3 shrink-0 rounded-full"
+      [style.background-color]="board().backgroundColor ?? 'var(--muted)'"
+    ></span>
+    <h3 class="truncate font-medium">{{ board().title }}</h3>
+  </div>
+
+  @if (board().description) {
+    <p class="text-muted-foreground line-clamp-2 text-sm">{{ board().description }}</p>
+  }
+
+  <div class="text-muted-foreground mt-auto flex items-center gap-4 text-xs">
+    <span>{{ board().taskCount }} tasks</span>
+    <span>{{ board().memberCount }} membros</span>
+  </div>
+</a>

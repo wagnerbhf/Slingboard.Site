@@ -1,0 +1,49 @@
+<div
+  class="border-border bg-background flex cursor-pointer flex-col gap-2 rounded-md border border-l-4 p-2.5 text-sm shadow-sm"
+  [class]="priorityBorderClass()"
+  tabindex="0"
+  role="button"
+  [attr.aria-label]="'Abrir task: ' + task().title"
+  (click)="opened.emit()"
+  (keydown.enter)="opened.emit()"
+>
+  <p class="font-medium">{{ task().title }}</p>
+
+  @if (task().description) {
+    <p class="text-muted-foreground line-clamp-2 text-xs">{{ task().description }}</p>
+  }
+
+  @if (task().labels.length > 0) {
+    <div class="flex flex-wrap gap-1">
+      @for (label of task().labels; track label.id) {
+        <span
+          class="rounded-full px-2 py-0.5 text-[0.65rem] font-medium text-white"
+          [style.background-color]="label.color"
+        >
+          {{ label.name }}
+        </span>
+      }
+    </div>
+  }
+
+  <div class="flex items-center justify-between gap-2">
+    <span class="text-muted-foreground text-xs">{{ priorityLabel() }}</span>
+
+    <div class="flex items-center gap-2">
+      @if (dueDateStatus()) {
+        <span class="rounded-full px-1.5 py-0.5 text-[0.65rem]" [class]="dueDateBadgeClass()">
+          {{ formattedDueDate() }}
+        </span>
+      }
+
+      @if (assigneeInitials(); as initials) {
+        <span
+          class="bg-muted flex h-5 w-5 items-center justify-center rounded-full text-[0.6rem] font-medium"
+          [title]="assignee()?.name"
+        >
+          {{ initials }}
+        </span>
+      }
+    </div>
+  </div>
+</div>

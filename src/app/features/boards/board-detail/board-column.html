@@ -1,0 +1,107 @@
+<div class="border-border bg-card flex w-72 shrink-0 flex-col gap-3 rounded-lg border p-3">
+  @if (editingColumn()) {
+    <div class="flex flex-col gap-2">
+      <input
+        hlmInput
+        type="text"
+        [formControl]="editTitle"
+        placeholder="Título da coluna"
+        (keydown.enter)="saveColumnEdit()"
+        (keydown.escape)="cancelEditingColumn()"
+      />
+      <input
+        hlmInput
+        type="number"
+        min="1"
+        [formControl]="editLimit"
+        placeholder="Limite (opcional)"
+        (keydown.enter)="saveColumnEdit()"
+        (keydown.escape)="cancelEditingColumn()"
+      />
+      @if (columnError()) {
+        <p class="text-destructive text-xs" role="alert">{{ columnError() }}</p>
+      }
+      <div class="flex gap-2">
+        <button
+          type="button"
+          hlmBtn
+          size="sm"
+          [disabled]="savingColumn()"
+          (click)="saveColumnEdit()"
+        >
+          {{ savingColumn() ? 'Salvando...' : 'Salvar' }}
+        </button>
+        <button type="button" hlmBtn size="sm" variant="ghost" (click)="cancelEditingColumn()">
+          Cancelar
+        </button>
+      </div>
+    </div>
+  } @else {
+    <div class="flex items-center justify-between gap-1">
+      <h2 class="text-sm font-semibold">{{ column().title }}</h2>
+      <div class="flex items-center gap-1">
+        <span class="rounded-full px-2 py-0.5 text-xs" [class]="countBadgeClass()">
+          {{ tasks().length }}{{ column().limit !== null ? ' / ' + column().limit : '' }}
+        </span>
+        <button
+          type="button"
+          hlmBtn
+          variant="ghost"
+          size="icon-xs"
+          aria-label="Editar coluna"
+          (click)="startEditingColumn()"
+        >
+          <ng-icon name="lucidePencil" />
+        </button>
+        <button
+          type="button"
+          hlmBtn
+          variant="ghost"
+          size="icon-xs"
+          aria-label="Excluir coluna"
+          [disabled]="deletingColumn()"
+          (click)="deleteColumn()"
+        >
+          <ng-icon name="lucideTrash" />
+        </button>
+      </div>
+    </div>
+  }
+
+  <div
+    cdkDropList
+    [id]="column().id"
+    [cdkDropListData]="tasks()"
+    (cdkDropListDropped)="taskDropped.emit($event)"
+    class="flex min-h-8 flex-col gap-2"
+  >
+    @for (task of tasks(); track task.id) {
+      <div cdkDrag [cdkDragData]="task">
+        <app-task-card [task]="task" [members]="members()" (opened)="taskClicked.emit(task)" />
+      </div>
+    }
+  </div>
+
+  @if (addingTask()) {
+    <div class="flex flex-col gap-2">
+      <input
+        hlmInput
+        type="text"
+        [formControl]="newTaskTitle"
+        placeholder="Título da task"
+        (keydown.enter)="submitNewTask()"
+        (keydown.escape)="cancelAddingTask()"
+      />
+      <div class="flex gap-2">
+        <button type="button" hlmBtn size="sm" (click)="submitNewTask()">Adicionar</button>
+        <button type="button" hlmBtn size="sm" variant="ghost" (click)="cancelAddingTask()">
+          Cancelar
+        </button>
+      </div>
+    </div>
+  } @else {
+    <button type="button" hlmBtn variant="ghost" size="sm" (click)="startAddingTask()">
+      + Adicionar task
+    </button>
+  }
+</div>

@@ -1,0 +1,72 @@
+<form [formGroup]="form" class="flex flex-wrap items-end gap-3">
+  <div class="space-y-1.5">
+    <label for="filterPriority" class="text-muted-foreground text-xs">Prioridade</label>
+    <select
+      id="filterPriority"
+      formControlName="priority"
+      (change)="emitFilters()"
+      class="border-input bg-background h-8 w-36 rounded-lg border px-2.5 text-sm"
+    >
+      <option value="">Todas</option>
+      @for (priority of priorities; track priority) {
+        <option [value]="priority">{{ priority }}</option>
+      }
+    </select>
+  </div>
+
+  <div class="space-y-1.5">
+    <label for="filterLabel" class="text-muted-foreground text-xs">Label</label>
+    <select
+      id="filterLabel"
+      formControlName="labelId"
+      (change)="emitFilters()"
+      class="border-input bg-background h-8 w-36 rounded-lg border px-2.5 text-sm"
+    >
+      <option value="">Todas</option>
+      @for (label of labels(); track label.id) {
+        <option [value]="label.id">{{ label.name }}</option>
+      }
+    </select>
+  </div>
+
+  <div class="space-y-1.5">
+    <label for="filterAssignee" class="text-muted-foreground text-xs">Responsável</label>
+    <select
+      id="filterAssignee"
+      formControlName="assigneeId"
+      (change)="emitFilters()"
+      class="border-input bg-background h-8 w-36 rounded-lg border px-2.5 text-sm"
+    >
+      <option value="">Todos</option>
+      @for (member of members(); track member.userId) {
+        <option [value]="member.userId">{{ member.name }}</option>
+      }
+    </select>
+  </div>
+
+  <div class="space-y-1.5">
+    <label for="filterDateFrom" class="text-muted-foreground text-xs">De</label>
+    <input
+      id="filterDateFrom"
+      type="date"
+      formControlName="dueDateFrom"
+      (change)="emitFilters()"
+      class="border-input bg-background h-8 w-36 rounded-lg border px-2.5 text-sm"
+    />
+  </div>
+
+  <div class="space-y-1.5">
+    <label for="filterDateTo" class="text-muted-foreground text-xs">Até</label>
+    <input
+      id="filterDateTo"
+      type="date"
+      formControlName="dueDateTo"
+      (change)="emitFilters()"
+      class="border-input bg-background h-8 w-36 rounded-lg border px-2.5 text-sm"
+    />
+  </div>
+
+  <button type="button" hlmBtn variant="ghost" size="sm" (click)="clearFilters()">
+    Limpar filtros
+  </button>
+</form>

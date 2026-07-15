@@ -1,0 +1,127 @@
+<div hlmDialogHeader>
+  <h2 hlmDialogTitle>Labels do board</h2>
+  <p hlmDialogDescription>Crie, edite e remova as labels usadas nas tasks deste board.</p>
+</div>
+
+<div class="space-y-4">
+  <form
+    [formGroup]="createForm"
+    (ngSubmit)="createLabel()"
+    class="border-border flex items-end gap-2 rounded-md border p-2"
+  >
+    <div class="flex-1 space-y-1.5">
+      <label hlmLabel for="newLabelName">Nova label</label>
+      <input
+        hlmInput
+        id="newLabelName"
+        type="text"
+        formControlName="name"
+        placeholder="Nome"
+        (blur)="createTouched.markTouched('name')"
+      />
+      @if (createForm.controls.name.invalid && createTouched.isTouched('name')) {
+        <p class="text-destructive text-sm">Informe um nome.</p>
+      }
+    </div>
+    <input
+      type="color"
+      formControlName="color"
+      aria-label="Cor da nova label"
+      class="border-border h-9 w-12 rounded-md border p-1"
+    />
+    <span
+      class="rounded-full px-2.5 py-1 text-xs font-medium whitespace-nowrap text-white"
+      [style.background-color]="createPreview().color"
+    >
+      {{ createPreview().name || 'preview' }}
+    </span>
+    <button type="submit" hlmBtn size="sm" [disabled]="creating()">
+      {{ creating() ? 'Criando...' : 'Adicionar' }}
+    </button>
+  </form>
+
+  @if (createError()) {
+    <p class="text-destructive text-sm" role="alert">{{ createError() }}</p>
+  }
+
+  <div class="flex flex-col gap-2">
+    @for (label of labelsResource.value(); track label.id) {
+      @if (editingLabelId() === label.id) {
+        <form
+          [formGroup]="editForm"
+          (ngSubmit)="saveEdit(label.id)"
+          class="border-border flex flex-col gap-2 rounded-md border p-2"
+        >
+          <div class="flex items-end gap-2">
+            <div class="flex-1 space-y-1.5">
+              <label [attr.for]="'editName-' + label.id" hlmLabel>Nome</label>
+              <input
+                hlmInput
+                [id]="'editName-' + label.id"
+                type="text"
+                formControlName="name"
+                (blur)="editTouched.markTouched('name')"
+              />
+            </div>
+            <input
+              type="color"
+              formControlName="color"
+              [attr.aria-label]="'Cor da label ' + label.name"
+              class="border-border h-9 w-12 rounded-md border p-1"
+            />
+            <span
+              class="rounded-full px-2.5 py-1 text-xs font-medium whitespace-nowrap text-white"
+              [style.background-color]="editPreview().color"
+            >
+              {{ editPreview().name || label.name }}
+            </span>
+          </div>
+          @if (editForm.controls.name.invalid && editTouched.isTouched('name')) {
+            <p class="text-destructive text-sm">Informe um nome.</p>
+          }
+          @if (editError()) {
+            <p class="text-destructive text-sm" role="alert">{{ editError() }}</p>
+          }
+          <div class="flex justify-end gap-2">
+            <button type="button" hlmBtn size="sm" variant="ghost" (click)="cancelEditing()">
+              Cancelar
+            </button>
+            <button type="submit" hlmBtn size="sm" [disabled]="savingEdit()">
+              {{ savingEdit() ? 'Salvando...' : 'Salvar' }}
+            </button>
+          </div>
+        </form>
+      } @else {
+        <div class="border-border flex items-center justify-between rounded-md border p-2">
+          <span
+            class="rounded-full px-2.5 py-1 text-xs font-medium text-white"
+            [style.background-color]="label.color"
+          >
+            {{ label.name }}
+          </span>
+          <div class="flex gap-2">
+            <button type="button" hlmBtn size="sm" variant="outline" (click)="startEditing(label)">
+              Editar
+            </button>
+            <button
+              type="button"
+              hlmBtn
+              size="sm"
+              variant="ghost"
+              [disabled]="deletingLabelId() === label.id"
+              (click)="deleteLabel(label)"
+            >
+              Remover
+            </button>
+          </div>
+        </div>
+      }
+    } @empty {
+      <p class="text-muted-foreground text-sm">Nenhuma label criada ainda.</p>
+    }
+  </div>
+</div>
+
+<div hlmDialogFooter>
+  <button type="button" hlmBtn variant="outline" (click)="close()">Fechar</button>
+</div>

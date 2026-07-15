@@ -1,0 +1,96 @@
+<div hlmDialogHeader>
+  <h2 hlmDialogTitle>{{ isEditing ? 'Editar task' : 'Nova task' }}</h2>
+  <p hlmDialogDescription>Preencha os detalhes da task.</p>
+</div>
+
+<form [formGroup]="form" (ngSubmit)="submit()" class="space-y-4">
+  <div class="space-y-1.5">
+    <label hlmLabel for="title">Título</label>
+    <input
+      hlmInput
+      id="title"
+      type="text"
+      formControlName="title"
+      (blur)="touched.markTouched('title')"
+    />
+    @if (form.controls.title.invalid && touched.isTouched('title')) {
+      <p class="text-destructive text-sm">Informe um título.</p>
+    }
+  </div>
+
+  <div class="space-y-1.5">
+    <label hlmLabel for="description">Descrição</label>
+    <textarea hlmTextarea id="description" formControlName="description" rows="3"></textarea>
+  </div>
+
+  <div class="grid grid-cols-2 gap-4">
+    <div class="space-y-1.5">
+      <label hlmLabel for="priority">Prioridade</label>
+      <select
+        id="priority"
+        formControlName="priority"
+        class="border-input bg-background h-8 w-full rounded-lg border px-2.5 text-sm"
+      >
+        @for (priority of priorities; track priority) {
+          <option [value]="priority">{{ priority }}</option>
+        }
+      </select>
+    </div>
+
+    <div class="space-y-1.5">
+      <label hlmLabel for="dueDate">Due date</label>
+      <input
+        id="dueDate"
+        type="date"
+        formControlName="dueDate"
+        class="border-input bg-background h-8 w-full rounded-lg border px-2.5 text-sm"
+      />
+    </div>
+  </div>
+
+  <div class="space-y-1.5">
+    <label hlmLabel for="assigneeId">Responsável</label>
+    <select
+      id="assigneeId"
+      formControlName="assigneeId"
+      class="border-input bg-background h-8 w-full rounded-lg border px-2.5 text-sm"
+    >
+      <option value="">Sem responsável</option>
+      @for (member of context.members; track member.userId) {
+        <option [value]="member.userId">{{ member.name }}</option>
+      }
+    </select>
+  </div>
+
+  @if (context.labels.length > 0) {
+    <div class="space-y-1.5">
+      <span hlmLabel>Labels</span>
+      <div class="flex flex-wrap gap-2">
+        @for (label of context.labels; track label.id) {
+          <button
+            type="button"
+            class="rounded-full border px-2.5 py-1 text-xs font-medium transition-colors"
+            [style.border-color]="label.color"
+            [style.background-color]="isLabelSelected(label.id) ? label.color : 'transparent'"
+            [style.color]="isLabelSelected(label.id) ? 'white' : label.color"
+            [attr.aria-pressed]="isLabelSelected(label.id)"
+            (click)="toggleLabel(label.id)"
+          >
+            {{ label.name }}
+          </button>
+        }
+      </div>
+    </div>
+  }
+
+  @if (errorMessage()) {
+    <p class="text-destructive text-sm" role="alert">{{ errorMessage() }}</p>
+  }
+
+  <div hlmDialogFooter>
+    <button type="button" hlmBtn variant="outline" (click)="cancel()">Cancelar</button>
+    <button type="submit" hlmBtn [disabled]="submitting()">
+      {{ submitting() ? 'Salvando...' : 'Salvar' }}
+    </button>
+  </div>
+</form>

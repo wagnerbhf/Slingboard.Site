@@ -1,0 +1,66 @@
+<div hlmDialogHeader>
+  <h2 hlmDialogTitle>Membros do board</h2>
+  <p hlmDialogDescription>Veja quem já participa e adicione novos membros.</p>
+</div>
+
+<div class="space-y-4">
+  <div class="flex flex-col gap-2">
+    @for (member of boardResource.value()?.members ?? []; track member.userId) {
+      <div class="border-border flex items-center justify-between rounded-md border p-2">
+        <div>
+          <p class="text-sm font-medium">{{ member.name }}</p>
+          <p class="text-muted-foreground text-xs">{{ member.email }}</p>
+        </div>
+        <span class="bg-muted text-muted-foreground rounded-full px-2 py-0.5 text-xs">
+          {{ member.role }}
+        </span>
+      </div>
+    }
+  </div>
+
+  <div class="space-y-1.5">
+    <label hlmLabel for="memberSearch">Adicionar membro</label>
+    <input
+      hlmInput
+      id="memberSearch"
+      type="search"
+      placeholder="Buscar por nome ou email..."
+      [formControl]="searchControl"
+    />
+  </div>
+
+  @if (searching()) {
+    <p class="text-muted-foreground text-sm">Buscando...</p>
+  } @else if (searchText().trim().length > 0) {
+    @if (searchResultsExcludingMembers().length === 0) {
+      <p class="text-muted-foreground text-sm">Nenhum usuário encontrado.</p>
+    } @else {
+      <div class="flex flex-col gap-1">
+        @for (user of searchResultsExcludingMembers(); track user.id) {
+          <button
+            type="button"
+            class="border-border hover:bg-muted flex items-center justify-between rounded-md border p-2 text-left"
+            [disabled]="addingUserId() === user.id"
+            (click)="addMember(user)"
+          >
+            <div>
+              <p class="text-sm font-medium">{{ user.name }}</p>
+              <p class="text-muted-foreground text-xs">{{ user.email }}</p>
+            </div>
+            <span class="text-primary text-xs">
+              {{ addingUserId() === user.id ? 'Adicionando...' : '+ Adicionar' }}
+            </span>
+          </button>
+        }
+      </div>
+    }
+  }
+
+  @if (addError()) {
+    <p class="text-destructive text-sm" role="alert">{{ addError() }}</p>
+  }
+</div>
+
+<div hlmDialogFooter>
+  <button type="button" hlmBtn variant="outline" (click)="close()">Fechar</button>
+</div>
