@@ -88,6 +88,18 @@
   }
 
   <div hlmDialogFooter>
+    @if (isEditing) {
+      <button
+        type="button"
+        hlmBtn
+        variant="destructive"
+        class="sm:mr-auto"
+        [disabled]="deleting()"
+        (click)="deleteTask()"
+      >
+        {{ deleting() ? 'Excluindo...' : 'Excluir' }}
+      </button>
+    }
     <button type="button" hlmBtn variant="outline" (click)="cancel()">Cancelar</button>
     <button type="submit" hlmBtn [disabled]="submitting()">
       {{ submitting() ? 'Salvando...' : 'Salvar' }}

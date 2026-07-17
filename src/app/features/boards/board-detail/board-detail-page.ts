@@ -15,9 +15,11 @@ import { AuthService } from '../../../core/auth/auth.service';
 import { ApiError } from '../../../core/http/api-error.model';
 import { RealtimeEvent } from '../../../core/realtime/realtime.models';
 import { RealtimeService } from '../../../core/realtime/realtime.service';
+import { getInitials } from '../../../shared/text/initials';
 import { HlmButton } from '../../../shared/ui/button/src';
 import { HlmDialogService } from '../../../shared/ui/dialog/src';
 import { HlmInput } from '../../../shared/ui/input/src';
+import { Skeleton } from '../../../shared/ui/skeleton/skeleton';
 import { ExportModal, ExportModalContext } from '../../exports/export-modal/export-modal';
 import { Label } from '../../labels/data/label.model';
 import { TaskFilters, TaskResponse } from '../../tasks/data/task.models';
@@ -39,6 +41,7 @@ import { BoardColumnComponent } from './board-column';
     BoardColumnComponent,
     FiltersBar,
     CdkDropListGroup,
+    Skeleton,
   ],
   templateUrl: './board-detail-page.html',
 })
@@ -129,12 +132,7 @@ export class BoardDetailPage {
   }
 
   protected initials(name: string): string {
-    return name
-      .split(' ')
-      .filter(Boolean)
-      .slice(0, 2)
-      .map((part) => part[0]?.toUpperCase())
-      .join('');
+    return getInitials(name);
   }
 
   protected startEditingTitle(): void {
@@ -222,15 +220,18 @@ export class BoardDetailPage {
       return;
     }
 
-    const ref = this.dialogService.open<TaskResponse | undefined, TaskModalContext>(TaskModal, {
-      context: {
-        boardId: this.boardId(),
-        columnId,
-        members: board.members,
-        labels: this.labelsResource.value(),
-        task,
+    const ref = this.dialogService.open<TaskResponse | 'deleted' | undefined, TaskModalContext>(
+      TaskModal,
+      {
+        context: {
+          boardId: this.boardId(),
+          columnId,
+          members: board.members,
+          labels: this.labelsResource.value(),
+          task,
+        },
       },
-    });
+    );
 
     ref.closed$.subscribe((result) => {
       if (result) {
@@ -340,6 +341,25 @@ export class BoardDetailPage {
                 : task,
             ),
           );
+        }
+        break;
+
+      case 'ColumnCreated':
+        if (event.payload.createdByUserId !== currentUserId) {
+          this.boardResource.reload();
+        }
+        break;
+
+      case 'ColumnUpdated':
+        if (event.payload.updatedByUserId !== currentUserId) {
+          this.boardResource.reload();
+        }
+        break;
+
+      case 'ColumnDeleted':
+        if (event.payload.deletedByUserId !== currentUserId) {
+          this.boardResource.reload();
+          this.tasksResource.reload();
         }
         break;
 

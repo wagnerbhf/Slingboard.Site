@@ -35,7 +35,9 @@ export class BoardColumnComponent {
   });
 
   protected readonly countBadgeClass = computed(() =>
-    this.isOverLimit() ? 'bg-destructive/10 text-destructive' : 'bg-muted text-muted-foreground',
+    this.isOverLimit()
+      ? 'bg-destructive/10 text-destructive'
+      : 'bg-background text-muted-foreground',
   );
 
   protected readonly addingTask = signal(false);
@@ -65,7 +67,7 @@ export class BoardColumnComponent {
     nonNullable: true,
     validators: [Validators.required],
   });
-  protected readonly editLimit = new FormControl('', { nonNullable: true });
+  protected readonly editLimit = new FormControl<number | null>(null);
   protected readonly savingColumn = signal(false);
   protected readonly deletingColumn = signal(false);
   protected readonly columnError = signal<string | null>(null);
@@ -73,7 +75,7 @@ export class BoardColumnComponent {
   protected startEditingColumn(): void {
     const column = this.column();
     this.editTitle.setValue(column.title);
-    this.editLimit.setValue(column.limit !== null ? String(column.limit) : '');
+    this.editLimit.setValue(column.limit);
     this.columnError.set(null);
     this.editingColumn.set(true);
   }
@@ -91,12 +93,10 @@ export class BoardColumnComponent {
     this.savingColumn.set(true);
     this.columnError.set(null);
 
-    const limitValue = this.editLimit.value.trim();
-
     this.columnsService
       .update(this.column().id, {
         title: this.editTitle.value.trim(),
-        limit: limitValue ? Number(limitValue) : null,
+        limit: this.editLimit.value,
       })
       .subscribe({
         next: () => {

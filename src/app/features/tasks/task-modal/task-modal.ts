@@ -46,7 +46,7 @@ const PRIORITIES: TaskPriority[] = ['Low', 'Medium', 'High', 'Urgent'];
 })
 export class TaskModal {
   private readonly tasksService = inject(TasksService);
-  private readonly dialogRef = inject(BrnDialogRef<TaskResponse | undefined>);
+  private readonly dialogRef = inject(BrnDialogRef<TaskResponse | 'deleted' | undefined>);
   protected readonly context = injectBrnDialogContext<TaskModalContext>();
 
   protected readonly isEditing = !!this.context.task;
@@ -72,6 +72,7 @@ export class TaskModal {
   );
 
   protected readonly submitting = signal(false);
+  protected readonly deleting = signal(false);
   protected readonly errorMessage = signal<string | null>(null);
   protected readonly touched = createTouchedTracker();
 
@@ -132,6 +133,27 @@ export class TaskModal {
 
   protected cancel(): void {
     this.dialogRef.close();
+  }
+
+  protected deleteTask(): void {
+    const task = this.context.task;
+    if (!task) {
+      return;
+    }
+    if (!confirm(`Excluir a task "${task.title}"? Essa ação não pode ser desfeita.`)) {
+      return;
+    }
+
+    this.deleting.set(true);
+    this.errorMessage.set(null);
+
+    this.tasksService.delete(task.id).subscribe({
+      next: () => this.dialogRef.close('deleted'),
+      error: (error: unknown) => {
+        this.deleting.set(false);
+        this.errorMessage.set(this.resolveErrorMessage(error));
+      },
+    });
   }
 
   private saveEdit(

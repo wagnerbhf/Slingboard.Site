@@ -31,11 +31,12 @@ describe('TaskModal', () => {
     create: ReturnType<typeof vi.fn>;
     update: ReturnType<typeof vi.fn>;
     assign: ReturnType<typeof vi.fn>;
+    delete: ReturnType<typeof vi.fn>;
   };
   let dialogRef: { close: ReturnType<typeof vi.fn> };
 
   function createComponent(context: TaskModalContext) {
-    tasksService = { create: vi.fn(), update: vi.fn(), assign: vi.fn() };
+    tasksService = { create: vi.fn(), update: vi.fn(), assign: vi.fn(), delete: vi.fn() };
     dialogRef = { close: vi.fn() };
 
     TestBed.configureTestingModule({
@@ -153,5 +154,61 @@ describe('TaskModal', () => {
 
     expect(tasksService.assign).not.toHaveBeenCalled();
     expect(dialogRef.close).toHaveBeenCalledWith(updated);
+  });
+
+  it('deletes the task and closes the dialog after confirmation', () => {
+    const task = buildTask();
+    const component = createComponent({
+      boardId: 'board-1',
+      columnId: 'col-1',
+      members: [],
+      labels: [],
+      task,
+    });
+    vi.spyOn(window, 'confirm').mockReturnValue(true);
+    tasksService.delete.mockReturnValue(of(undefined));
+
+    component['deleteTask']();
+
+    expect(tasksService.delete).toHaveBeenCalledWith('task-1');
+    expect(dialogRef.close).toHaveBeenCalledWith('deleted');
+  });
+
+  it('does not delete the task when the confirmation is declined', () => {
+    const task = buildTask();
+    const component = createComponent({
+      boardId: 'board-1',
+      columnId: 'col-1',
+      members: [],
+      labels: [],
+      task,
+    });
+    vi.spyOn(window, 'confirm').mockReturnValue(false);
+
+    component['deleteTask']();
+
+    expect(tasksService.delete).not.toHaveBeenCalled();
+    expect(dialogRef.close).not.toHaveBeenCalled();
+  });
+
+  it('surfaces the API error message when deletion fails', () => {
+    const task = buildTask();
+    const component = createComponent({
+      boardId: 'board-1',
+      columnId: 'col-1',
+      members: [],
+      labels: [],
+      task,
+    });
+    vi.spyOn(window, 'confirm').mockReturnValue(true);
+    tasksService.delete.mockReturnValue(
+      throwError(() => ({ title: 'Não autorizado', status: 403 })),
+    );
+
+    component['deleteTask']();
+
+    expect(component['errorMessage']()).toBe('Não autorizado');
+    expect(component['deleting']()).toBe(false);
+    expect(dialogRef.close).not.toHaveBeenCalled();
   });
 });

@@ -39,6 +39,27 @@ export interface TaskAssignedPayload {
   assignedByUserId: string;
 }
 
+export interface ColumnCreatedPayload {
+  columnId: string;
+  title: string;
+  order: number;
+  limit: number | null;
+  createdByUserId: string;
+}
+
+export interface ColumnUpdatedPayload {
+  columnId: string;
+  title: string;
+  limit: number | null;
+  updatedByUserId: string;
+}
+
+export interface ColumnDeletedPayload {
+  columnId: string;
+  tasksMovedToColumnId: string;
+  deletedByUserId: string;
+}
+
 export interface BoardUpdatedPayload {
   boardId: string;
   title: string;
@@ -78,6 +99,9 @@ export type RealtimeEvent =
   | { type: 'TaskMoved'; payload: TaskMovedPayload }
   | { type: 'TaskDeleted'; payload: TaskDeletedPayload }
   | { type: 'TaskAssigned'; payload: TaskAssignedPayload }
+  | { type: 'ColumnCreated'; payload: ColumnCreatedPayload }
+  | { type: 'ColumnUpdated'; payload: ColumnUpdatedPayload }
+  | { type: 'ColumnDeleted'; payload: ColumnDeletedPayload }
   | { type: 'BoardUpdated'; payload: BoardUpdatedPayload }
   | { type: 'MemberJoined'; payload: MemberJoinedPayload }
   | { type: 'LabelCreated'; payload: LabelCreatedPayload }
@@ -90,6 +114,9 @@ export const REALTIME_EVENT_NAMES = [
   'TaskMoved',
   'TaskDeleted',
   'TaskAssigned',
+  'ColumnCreated',
+  'ColumnUpdated',
+  'ColumnDeleted',
   'BoardUpdated',
   'MemberJoined',
   'LabelCreated',

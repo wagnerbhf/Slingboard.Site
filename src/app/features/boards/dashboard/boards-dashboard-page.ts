@@ -16,6 +16,7 @@ import { ApiError } from '../../../core/http/api-error.model';
 import { HlmButton } from '../../../shared/ui/button/src';
 import { HlmDialogService } from '../../../shared/ui/dialog/src';
 import { HlmInput } from '../../../shared/ui/input/src';
+import { Skeleton } from '../../../shared/ui/skeleton/skeleton';
 import { BoardDetail, BoardSummary } from '../data/board.models';
 import { BoardsService } from '../data/boards.service';
 import { BoardCard } from './board-card';
@@ -23,7 +24,7 @@ import { CreateBoardDialog } from './create-board-dialog';
 
 @Component({
   selector: 'app-boards-dashboard-page',
-  imports: [ReactiveFormsModule, HlmButton, HlmInput, BoardCard],
+  imports: [ReactiveFormsModule, HlmButton, HlmInput, BoardCard, Skeleton],
   templateUrl: './boards-dashboard-page.html',
 })
 export class BoardsDashboardPage {

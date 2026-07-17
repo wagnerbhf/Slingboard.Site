@@ -46,4 +46,8 @@ export class TasksService {
       assigneeId,
     });
   }
+
+  delete(taskId: string): Observable<void> {
+    return this.http.delete<void>(`${environment.apiBaseUrl}/tasks/${taskId}`);
+  }
 }
